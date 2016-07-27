@@ -19,9 +19,11 @@
     <br>
     <img src="images/stanford.png" alt="Stanford University">
     <p id='logo-text'>Stanford Language and Cognition Lab</p>
-    <p class="block-text">In this HIT, you will listen to short audio clips of people talking and answer questions about them.</p>
+    <p class="block-text">In this HIT, you will listen to short audio clips of people talking and answer questions about them.
+      <br>
+      <br> Note: this hit may not work well with older browsers. We recommend Google Chrome.</p>
 
-    <button type="button" onclick="this.blur(); experiment.next()">Start</button>
+    <button type="button" onclick="this.blur(); experiment.instructions()">Start</button>
 
     <p class="block-text">
       <br> <b> Note: you won't be able to preview this HIT before accepting it because it's so short. </b></p>
@@ -51,7 +53,7 @@
     <br>
 
     <div align="center">
-      <audio id="audio" controls="controls">
+      <audio id="audio" controls="controls" onended="audio_played=true;">
         <source id="wavSource" src="" type="audio/wav"> Your browser does not support the audio element.
       </audio>
     </div>
@@ -70,44 +72,48 @@
           <tr>
             <td></td>
             <td></td>
-            <td>Do Not Agree</td>
+            <td>
+              <div id="low_answer">{{}}</div>
+            </td>
             <td></td>
             <td></td>
-            <td>Agree Somewhat</td>
             <td></td>
             <td></td>
-            <td>Strongly Agree</td>
+            <td></td>
+            <td>
+              <div id="high_answer">{{}}</div>
+            </td>
           </tr>
           <tr>
             <td></td>
             <td></td>
             <td>
-              <input class="likert" id="likert1" type="radio" name="judgment" value="0">
-              <label for="likert1">0</label>
+              <input class="likert" id="likert1" type="radio" name="judgment" value="1">
+              <label for="likert1">1</label>
             </td>
             <td>
-              <input class="likert" id="likert2" type="radio" name="judgment" value="1">
-              <label for="likert2">1</label>
+              <input class="likert" id="likert2" type="radio" name="judgment" value="2">
+              <label for="likert2">2</label>
             </td>
             <td>
-              <input class="likert" id="likert3" type="radio" name="judgment" value="2">
-              <label for="likert3">2</label>
+              <input class="likert" id="likert3" type="radio" name="judgment" value="3">
+              <label for="likert3">3</label>
             </td>
             <td>
-              <input class="likert" id="likert4" type="radio" name="judgment" value="3">
-              <label for="likert4">3</label>
+              <input class="likert" id="likert4" type="radio" name="judgment" value="4">
+              <label for="likert4">4</label>
             </td>
             <td>
-              <input class="likert" id="likert5" type="radio" name="judgment" value="4">
-              <label for="likert5">4</label>
+              <input class="likert" id="likert5" type="radio" name="judgment" value="5">
+              <label for="likert5">5</label>
             </td>
             <td>
-              <input class="likert" id="likert6" type="radio" name="judgment" value="5">
-              <label for="likert6">5</label>
+              <input class="likert" id="likert6" type="radio" name="judgment" value="6">
+              <label for="likert6">6</label>
             </td>
             <td>
-              <input class="likert" id="likert7" type="radio" name="judgment" value="6">
-              <label for="likert7">6</label>
+              <input class="likert" id="likert7" type="radio" name="judgment" value="7">
+              <label for="likert7">7</label>
             </td>
             <td>&nbsp;&nbsp;&nbsp;</td>
             <td></td>
@@ -130,11 +136,23 @@
 
 
   <!-- The instructions slide. -->
-  <div class="slide" id="instruct">
+  <div class="slide" id="specific_instructions">
 
     <br>
 
-    <p class="block-text">INSTRUCTIONS GO HERE.</p>
+    <p class="block-text" align="center">
+      In this HIT, you will be asked to listen to audio clips of women speaking and make judgments about them.
+      <br>
+    </p>
+    <p id="instructions_text" class="block-text">
+      {{}}
+    </p>
+    <p class="block-text" align="center">
+      If the audio does not work for you, our apologies, but please return the HIT, as you will not be able to do this job. We will also know that you can't hear the clips, because within the HIT, there will be some clips that tell you to choose a specific
+      number. When you get those, ignore the question we are asking and choose the number you heard.
+      <br>
+      <br> Thanks for helping us!
+    </p>
 
     <table align="center">
       <tr>
@@ -155,7 +173,7 @@
   <div class="slide" id="debriefing">
     <form id="demographics" onsubmit="experiment.submitcomments()">
 
-      <table width="100%">
+      <!-- <table width="100%">
         <col style="width:30%">
         <col style="width:70%">
         <tr>
@@ -184,7 +202,7 @@
           </td>
         </tr>
       </table>
-      <br>
+      <br> -->
 
       <p><b>What is your age?</b></p>
       <p>
@@ -218,6 +236,18 @@
           <option value="4year">4-year college</option>
           <option value="someGrad">Some graduate school</option>
           <option value="Grad">Graduate degree</option>
+        </select>
+      </p>
+
+      <p><b>What region of the US did you grow up in??</b></p>
+      <p>
+        <select name="region" id="region" form="demographics">
+          <option value="">Choose a level</option>
+          <option value="northeast">The northeast or mid-atlantic states</option>
+          <option value="south">The south (including Texas)</option>
+          <option value="midwest">The midwest or upper midwest</option>
+          <option value="west">The west (including intermountain west and west coast)</option>
+          <option value="other">Outside the US or other</option>
         </select>
       </p>
 
