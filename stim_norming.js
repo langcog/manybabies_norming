@@ -78,7 +78,7 @@ var conditions = [{
 }, {
   name: 'naturalness',
   instructions: 'The specific question we are interested in here is <b>how natural the clip sounds</b>. Some clips may sound like they are being spoken by someone who is comfortably interacting with a child or an adult. Others may sound artificial or awkward, like they are being spoken by a bad actor or the person speaking is uncomfortable with the situation. We will ask you to rate clips from 1 - 7, choosing 1 if the speaker sounds very unnatural and 7 if they sound very natural, comfortable, and normal.',
-  question: 'Does this clip sound like the speaker is comfortable and in a normal environment, or like the speaker is awkward or artificial? How natural-sounding is this clip?',
+  question: 'Does this clip sound like the speaker is comfortable and in a normal environment (interacting with a child or adult), or like the speaker is awkward or artificial? How natural-sounding is this clip?',
   low_answer: 'Very unnatural',
   high_answer: 'Very natural',
   directory: 'normed/'
