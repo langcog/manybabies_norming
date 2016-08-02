@@ -1,0 +1,158 @@
+---
+title: "ManyBabies Norming Analysis"
+output: 
+  html_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(knitr)
+library(langcog)
+library(ggplot2)
+library(rjson)
+library(readr)
+library(stringr)
+library(tibble)
+library(purrr)
+library(tidyr)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data loading and cleaning
+
+Read in files and consolidate to the same directory. 
+
+```{r warning=FALSE, error=FALSE, message=FALSE}
+files <- dir("../production-results/")
+d.raw <- tibble()
+
+for (f in files) {
+  jf <- paste("../production-results/",f,sep="")
+  jd <- fromJSON(paste(readLines(jf), collapse=""))
+  id <- data.frame(workerid = jd$WorkerId, 
+                   rating = as.numeric(jd$answers$data$rating),
+                   file = jd$answers$data$filename,
+                   condition = jd$answers$data$condition,
+                   age = jd$answers$data$age,
+                   language = jd$answers$data$homelang,
+                   race = jd$answers$data$race[1],
+                   education = jd$answers$data$education,
+                   children = jd$answers$data$children)
+  d.raw <- bind_rows(d.raw, id)
+}
+```
+
+Exclude non-compliant participants and non-English speakers. 
+
+```{r}
+compliant <- d.raw %>% 
+  filter(grepl("choose", file)) %>%
+  mutate(file = as.numeric(str_replace(str_replace(file, "\\.\\./choose_", ""), 
+                            "\\.wav", ""))) %>%
+  mutate(compliant = rating == file) %>%
+  group_by(workerid) %>%
+  summarise(compliant = mean(compliant) == 1)
+
+english <- d.raw %>% 
+  group_by(workerid, language) %>%
+  distinct() %>%
+  filter(str_detect(pattern = "[eE]nglish", language))
+
+d <- d.raw %>%
+  filter(workerid %in% compliant$workerid, 
+         workerid %in% english$workerid, 
+         !str_detect(file, pattern = "choose_"))
+```
+
+Merge in filename data. 
+
+```{r warning=FALSE, error=FALSE, message=FALSE}
+file_info <- read_csv("../wavs/file_key.csv")
+
+d <- left_join(d, file_info)  
+```
+
+Distribution across conditions. 
+
+```{r}
+d %>% 
+  group_by(condition, workerid) %>%
+  distinct %>%
+  group_by(condition) %>%
+  summarise(n =n()) %>%
+  kable
+```
+
+# Main analysis
+
+Major summary histogram.
+
+```{r}
+d %>%
+  mutate(object = !is.na(object)) %>%
+  group_by(file, condition, register, object) %>%
+  summarise(rating = mean(rating)) %>%
+ggplot(aes(x = rating)) + 
+  geom_histogram(binwidth=1) + 
+  facet_grid(register~condition) + 
+  theme_bw()
+```
+
+Check correlations between raters.
+
+```{r}
+d %>%
+  split(.$condition) %>%
+  map_df(function(x) {
+    cors <- x %>% 
+      select(workerid, rating, file) %>% 
+      spread(workerid, rating) %>%
+      select(-file) %>%
+      cor
+    cors[cors == 1] <- NA
+    tibble(condition = x$condition[1], 
+           cor = mean(cors, na.rm=TRUE), 
+           min = min(cors, na.rm=TRUE), 
+           max = max(cors, na.rm=TRUE))
+  }) %>%
+  kable(digits = 2)
+```
+
+# Filtering analysis
+
+As described by Melanie in an email 8/2/16.
+
+*Step 1: Select items that meet the following criteria only*
+
+- Accent: 1-2 only.
+- Naturalness: 4-7 only
+- IDS/ADS: 1-3 or 5-7 only (as appropriate)
+- Noise: 1-3 (or should we be more strict? Given these were all selected to be pretty noise-free to begin with, 1-3 might be sufficient)
+
+*Step 2: Match across IDS and ADS on similarity for:*
+
+- Approximate quantity (in duration) of contribution from a given mom
+- Quantity of mentions of familiar objects, and unfamiliar objects (or try to match by specific object label?)
+
+*Step 3: Re-check according some criteria of "sameness" (not sure what that should be)* 
+
+- Accent, naturalness and noise level are similar between IDS and ADS and we haven't created a systematic bias in Step 2.
+
+```{r}
+filtered <- d %>%
+  group_by(condition, register, object, baby_id, recording_id, file) %>%
+  summarize(rating = mean(rating)) %>%
+  spread(condition, rating) %>%
+  filter(accent < 3, naturalness > 4, noise < 4,
+         (register == "IDS" & idsness > 4) | (register == "ADS" & idsness < 4))
+
+filtered
+```
+
+Output. 
+
+```{r}
+write_csv(filtered, "../wavs/filtered_and_normed.csv")
+```
+

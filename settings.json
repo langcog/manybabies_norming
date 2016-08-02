@@ -1,12 +1,12 @@
 {
     "title":               "Audio rating study",
-    "description":         "Listen to and rate audio clips of women talking. Expected to take around 20 min. Headphones helpful.",
+    "description":         "Listen to and rate audio clips of women talking. Expected to take a bit more than 30 min. Headphones helpful.",
     "keywords":            "Language, experiment, rating",
     "url":                 "https://langcog.stanford.edu/expts/manybabies_norming/stim_norming.html",
     "frame_height":         500,
-    "assignment_duration":  "60 minutes",
+    "assignment_duration":  "120 minutes",
     "auto_approval_delay":  "5 minutes",
-    "reward":               3.00,
+    "reward":               4.00,
     "experimenter":	    "mike",
     "server_log_path":	    "http://langcog.stanford.edu/cgi-bin/cosub/log_submission.php",
     "qualifications": {
