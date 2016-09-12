@@ -15,7 +15,9 @@ samplingRate <- 44100 #Sampling rate for all clips
 fadeLength.song <- 5 #Length of time for song clips to crossfade
 fadeBits <- fadeLength.song*samplingRate #Number of samples to crossfade
 
-newfilter_and_normed.shared_objects <- read.csv("~/Desktop/Many Babies Stimuli Sets/normed_rows.csv") #read in data about the speech clips
+newfilter_and_normed <- read.csv("filtered_and_normed.csv") #read in data about the speech clips
+newfilter_and_normed.shared_objects <- subset(newfilter_and_normed, newfilter_and_normed$object != "flag" & newfilter_and_normed$object!="sieve") #create a copied dataset without the files with objects flag or sieve (only the ADS files had these objects, no possible IDS matches)
+
 wavFileLocation <- "~/Documents/repo/wavs/manybabies_norming/wavs/normed/" #Folder of speech clips stored
 
 # Create Jazz Mix ---------------------------------------------------------
