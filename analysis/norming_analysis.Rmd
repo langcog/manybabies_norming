@@ -24,11 +24,11 @@ knitr::opts_chunk$set(echo = TRUE)
 Read in files and consolidate to the same directory. 
 
 ```{r warning=FALSE, error=FALSE, message=FALSE}
-files <- dir("../production-results/")
+files <- dir("../anonymized-results/")
 d.raw <- tibble()
 
 for (f in files) {
-  jf <- paste("../production-results/",f,sep="")
+  jf <- paste("../anonymized-results/",f,sep="")
   jd <- fromJSON(paste(readLines(jf), collapse=""))
   id <- data.frame(workerid = jd$WorkerId, 
                    rating = as.numeric(jd$answers$data$rating),
@@ -98,6 +98,21 @@ ggplot(aes(x = rating)) +
   facet_grid(register~condition) + 
   theme_bw()
 ```
+
+Give means and variability.
+
+```{r}
+d %>%
+  mutate(object = !is.na(object)) %>%
+  group_by(file, condition) %>%
+  summarise(rating = mean(rating)) %>%
+  group_by(condition) %>%
+  summarise(mean = mean(rating),
+            sd = sd(rating)) %>%
+  knitr::kable(digits = 2)
+```
+
+
 
 Check correlations between raters.
 
