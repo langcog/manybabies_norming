@@ -1,0 +1,366 @@
+<!-- ## Code -->
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audio Listening Survey</title>
+  <script src="jquery-1.11.2.min.js"></script>
+  <script src="mmturkey-0.6.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+  <!-- The instructions slide. -->
+  <div class="slide" id="instructions">
+    <br>
+    <img src="images/stanford.png" alt="Stanford University">
+    <p id='logo-text'>Stanford Language and Cognition Lab</p>
+    <p class="block-text">In this HIT, you will listen to 18-second audio clips of people talking (16 in total) and answer questions about them. We estimate that the hit will take 5 min in total.
+      <br>
+      <br> Note: this hit may not work well with older browsers. We recommend Google Chrome.</p>
+
+    <button type="button" onclick="this.blur(); experiment.instructions()">Start</button>
+
+    <p class="block-text">
+      <br> <b> Note: you won't be able to preview this HIT before accepting it. </b></p>
+
+    <p class="block-text" id="legal">By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact us at <a href="mailto://languagecoglab@gmail.com.">languagecoglab@gmail.com</a>.
+      You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences.
+      Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you. Note however that we have recently been made aware that your public Amazon.com profile can be accessed via your
+      worker ID if you do not choose to opt out. If you would like to opt out of this feature, you may follow instructions available <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=16465241">here</a>.</p>
+  </div>
+
+  <!-- Progress Bar -->
+
+  <div class="progress">
+    <div id="progress" class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+    </div>
+  </div>
+
+  <!-- Questionnaire slide 1 - attitudes -->
+
+  <div class="slide" id="norm_slide">
+    <br>
+
+    <div align="center">
+      <p>Please listen to the following audio clip.</p>
+    </div>
+
+    <br>
+
+    <div align="center">
+      <audio id="audio" controls="controls" onended="audio_played=true;">
+        <source id="wavSource" src="" type="audio/wav"> Your browser does not support the audio element.
+      </audio>
+    </div>
+
+    <br>
+
+    <div align="center">
+      <h4 id="question">{{}}</h4>
+      <br>
+    </div>
+
+    <!-- Likert radio buttons -->
+    <table align="center">
+      <tr>
+        <td align="center">
+          <tr>
+            <td></td>
+            <td></td>
+            <td>
+              <div id="low_answer">{{}}</div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+              <div id="high_answer">{{}}</div>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td>
+              <input class="likert" id="likert1" type="radio" name="judgment" value="1">
+              <label for="likert1">1</label>
+            </td>
+            <td>
+              <input class="likert" id="likert2" type="radio" name="judgment" value="2">
+              <label for="likert2">2</label>
+            </td>
+            <td>
+              <input class="likert" id="likert3" type="radio" name="judgment" value="3">
+              <label for="likert3">3</label>
+            </td>
+            <td>
+              <input class="likert" id="likert4" type="radio" name="judgment" value="4">
+              <label for="likert4">4</label>
+            </td>
+            <td>
+              <input class="likert" id="likert5" type="radio" name="judgment" value="5">
+              <label for="likert5">5</label>
+            </td>
+            <td>
+              <input class="likert" id="likert6" type="radio" name="judgment" value="6">
+              <label for="likert6">6</label>
+            </td>
+            <td>
+              <input class="likert" id="likert7" type="radio" name="judgment" value="7">
+              <label for="likert7">7</label>
+            </td>
+            <td>&nbsp;&nbsp;&nbsp;</td>
+            <td></td>
+          </tr>
+    </table>
+
+    <!-- Next button and "please make a response" message -->
+    <table align="center">
+      <tr>
+        <td align="center">
+          <button type="button" id="nextButton" onClick="experiment.log_response()"> next</button>
+        </td>
+        <tr>
+          <td align="center">
+            <div id="testMessage"> </div>
+          </td>
+        </tr>
+    </table>
+  </div>
+
+
+  <!-- The instructions slide. -->
+  <div class="slide" id="specific_instructions">
+
+    <br>
+
+    <p class="block-text" align="center">
+      In this HIT, you will be asked to listen to audio clips of women speaking and make judgments about them. <b>We find that headphones help
+      with this task, so please use them if you have them available.</b>
+      <br>
+    </p>
+    <p id="instructions_text" class="block-text">
+      {{}}
+    </p>
+    <p class="block-text" align="center">
+      If the audio does not work for you, our apologies, but please return the HIT, as you will not be able to do this job. There are also checks built into the task that will tell us that you are not listening.<br>
+      <br>
+      In particular, <b>within the HIT, there will be some clips that tell you to choose a specific number. When you get those, ignore the question we are asking and choose the number you heard.</b>
+      <br>
+      <br> Thanks for helping us!
+    </p>
+
+    <table align="center">
+      <tr>
+        <td align="center">
+          <button type="button" id="nextButton_inst" onClick="this.blur(); experiment.next()"> Continue</button>
+        </td>
+        <tr>
+          <td align="center">
+
+          </td>
+        </tr>
+
+    </table>
+
+  </div>
+
+  <!-- The debriefing slide. -->
+  <div class="slide" id="debriefing">
+    <form id="demographics" onsubmit="experiment.submitcomments()">
+
+      <!-- <table width="100%">
+        <col style="width:30%">
+        <col style="width:70%">
+        <tr>
+          <td><img src="images/ladder.png"></td>
+          <td>
+            <p><b>Think of this ladder as representing where people stand in the United states.</b></p>
+            <p>At the top of the ladder are the people who are the best off - those who have the most money, the most education, and the most respected jobs. At the bottom are the people who are the worst off - who have the least money, least education,
+              and the least respected jobs or no job. The higher up you are on this ladder, the closer you are to the people at the very top; the lower you are, the closer you are to the people at the very bottom.
+            </p>
+            <p><b>Where would you place yourself on this ladder?</b></p>
+            <p>
+              <select name="ladder" id="ladder" form="demographics">
+                <option value="">Choose a rung</option>
+                <option value="10">10 - Top</option>
+                <option value="9">9</option>
+                <option value="8">8</option>
+                <option value="7">7</option>
+                <option value="6">6</option>
+                <option value="5">5</option>
+                <option value="4">4</option>
+                <option value="3">3</option>
+                <option value="2">2</option>
+                <option value="1">1 - Bottom</option>
+              </select>
+            </p>
+          </td>
+        </tr>
+      </table>
+      <br> -->
+
+      <p><b>What is your age?</b></p>
+      <p>
+        <select name="age" id="age" form="demographics">
+          <option value="">Choose an age</option>
+          <option value="0-19">&nbsp;0-19</option>
+          <option value="20-29">20-29</option>
+          <option value="30-39">30-39</option>
+          <option value="40-49">40-49</option>
+          <option value="50-59">50-59</option>
+          <option value="60-69">60-69</option>
+          <option value="70-79">70-79</option>
+          <option value="80-89">80-89</option>
+          <option value="&gt;90">90+</option>
+        </select>
+      </p>
+
+      <p><b>What is your gender?</b></p>
+      <p>
+        <input type="text" id="gender" name="gender" style="width:40%" value="">
+        </textarea>
+      </p>
+
+      <p><b>What is your highest level of education completed?</b></p>
+      <p>
+        <select name="education" id="education" form="demographics">
+          <option value="">Choose a level</option>
+          <option value="gradeSchool">Grade school</option>
+          <option value="highSchool">High school</option>
+          <option value="someCollege">Some college</option>
+          <option value="4year">4-year college</option>
+          <option value="someGrad">Some graduate school</option>
+          <option value="Grad">Graduate degree</option>
+        </select>
+      </p>
+
+      <p><b>What region of the US did you grow up in??</b></p>
+      <p>
+        <select name="region" id="region" form="demographics">
+          <option value="">Choose a level</option>
+          <option value="northeast">The northeast or mid-atlantic states</option>
+          <option value="south">The south (including Texas)</option>
+          <option value="midwest">The midwest or upper midwest</option>
+          <option value="west">The west (including intermountain west and west coast)</option>
+          <option value="other">Outside the US or other</option>
+        </select>
+      </p>
+
+      <p><b>What is your native/first language (i.e., the language that was primarily spoken at home when you were a child)?</b></p>
+      <p>
+        <input type="text" id="homelang" name="lg" style="width:40%" value="">
+        </textarea>
+      </p>
+
+      <p><b>What is your ethnicity?</b></p>
+      <p>
+
+        <select name="ethnicity" id="ethnicity" form="demographics">
+          <option value="">Choose an ethnicity</option>
+          <option value="Hispanic">Hispanic or Latino</option>
+          <option value="NonHispanic">Non-Hispanic or Latino</option>
+          <option value="NA">Prefer not to state</option>
+        </select>
+      </p>
+
+      <p><b>What is your race? Please check all that apply.</b></p>
+      <p>
+        <form>
+          <input type="checkbox" name="race" value="amInd"> American Indian or Alaskan Native
+          <br>
+          <input type="checkbox" name="race" value="asian"> Asian
+          <br>
+          <input type="checkbox" name="race" value="natHaw"> Native Hawaiian or US Pacific Islander
+          <br>
+          <input type="checkbox" name="race" value="black"> Black/African American
+          <br>
+          <input type="checkbox" name="race" value="white"> White
+          <br>
+          <input type="checkbox" name="race" value="other"> Other
+        </form>
+
+        <p><b>How many children do you have?</b></p>
+        <p>
+          <select name="children" id="children" form="demographics">
+            <option value="">Choose a number</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="morethan5">More than 5</option>
+          </select>
+        </p>
+
+        <p><b>If you have children, how old is your <em>oldest</em> child?</b></p>
+        <p>
+          <select name="oldest" id="oldestAge" form="demographics">
+            <option value="">Choose an age</option>
+            <option value="0to6mo">0-6 months old</option>
+            <option value="7to12mo">7-12 months old</option>
+            <option value="1y">1 year old</option>
+            <option value="2y">2 years old</option>
+            <option value="3y">3 years old</option>
+            <option value="4y">4 years old</option>
+            <option value="5y">5 years old</option>
+            <option value="6y">6 years old</option>
+            <option value="7y">7 years old</option>
+            <option value="8y">8 years old</option>
+            <option value="9y">9 years old</option>
+            <option value="10y">10 years old</option>
+            <option value="olderthan10">More than 10 years old</option>
+          </select>
+
+          <p><b>If you have children, how old is your <em>youngest</em> child?</b></p>
+          <p>
+            <select name="youngest" id="youngestAge" form="demographics">
+              <option value="">Choose an age</option>
+              <option value="0to6mo">0-6 months old</option>
+              <option value="7to12mo">7-12 months old</option>
+              <option value="1y">1 year old</option>
+              <option value="2y">2 years old</option>
+              <option value="3y">3 years old</option>
+              <option value="4y">4 years old</option>
+              <option value="5y">5 years old</option>
+              <option value="6y">6 years old</option>
+              <option value="7y">7 years old</option>
+              <option value="8y">8 years old</option>
+              <option value="9y">9 years old</option>
+              <option value="10y">10 years old</option>
+              <option value="olderthan10">More than 10 years old</option>
+            </select>
+
+            <p><b>What do you think this experiment was about?</b></p>
+            <p>
+              <textarea type="text" id="expthoughts" style="width:100%" name="expaim"></textarea>
+            </p>
+
+            <p><b>Any general comments about the experiment?</b></p>
+            <p>
+              <textarea type="textarea" id="expcomments" style="width:100%" name="expgen"></textarea>
+            </p>
+    </form>
+
+    <div align="center">
+      <button type="button" id="debriefsubmit" onClick="experiment.submit_comments()">Submit</button>
+    </div>
+  </div>
+
+  <!-- The finish slide. -->
+  <div class="slide" id="finished">
+    You're finished - thanks for participating! Submitting to Mechanical Turk...
+  </div>
+
+  <script src="clip_norming.js"></script>
+
+</body>
+
+</html>
