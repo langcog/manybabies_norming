@@ -73,11 +73,11 @@ var conditions = [{
 var condition = conditions.random();
 
 // set up filenames array
-var filenames = shuffle(files);
+files.push("../choose_1.wav")
+files.push("../choose_4.wav")
+files.push("../choose_7.wav")
 
-filenames.push("../choose_1.wav")
-filenames.push("../choose_4.wav")
-filenames.push("../choose_7.wav")
+var filenames = shuffle(files);
 
 var numTrialsExperiment = filenames.length;
 
@@ -144,6 +144,7 @@ var experiment = {
 
 			audio_played = false;
 			experiment.data.rating.push(response_value);
+      $("#testMessage").html('');
       experiment.next();
 
     } else if (audio_played) {
