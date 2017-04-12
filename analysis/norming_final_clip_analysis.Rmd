@@ -1,0 +1,103 @@
+---
+title: "ManyBabies Final Clip Norming Analysis"
+output: 
+  html_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(knitr)
+library(langcog)
+library(ggplot2)
+library(rjson)
+library(readr)
+library(stringr)
+library(tibble)
+library(purrr)
+library(tidyr)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data loading and cleaning
+
+Read in files and consolidate to the same directory. 
+
+```{r warning=FALSE, error=FALSE, message=FALSE}
+files <- dir("../production-results/", pattern = "*.json")
+d.raw <- tibble()
+
+for (f in files) {
+  jf <- paste("../production-results/",f,sep="")
+  jd <- fromJSON(paste(readLines(jf), collapse=""))
+  id <- data.frame(workerid = jd$WorkerId, 
+                   rating = as.numeric(jd$answers$data$rating),
+                   file = jd$answers$data$filename,
+                   condition = jd$answers$data$condition,
+                   age = jd$answers$data$age,
+                   language = jd$answers$data$homelang)
+  d.raw <- bind_rows(d.raw, id)
+}
+```
+
+Exclude non-compliant participants and non-English speakers. 
+
+```{r}
+compliant <- d.raw %>% 
+  filter(grepl("choose", file)) %>%
+  mutate(file = as.numeric(str_replace(str_replace(file, "\\.\\./choose_", ""), 
+                            "\\.wav", ""))) %>%
+  mutate(compliant = rating == file) %>%
+  group_by(workerid) %>%
+  summarise(compliant = mean(compliant) == 1)
+
+english <- d.raw %>% 
+  group_by(workerid, language) %>%
+  distinct() %>%
+  filter(str_detect(pattern = "english", str_to_lower(language)))
+
+d <- d.raw %>%
+  filter(workerid %in% compliant$workerid, 
+         workerid %in% english$workerid, 
+         !str_detect(file, pattern = "choose_")) %>%
+  mutate(register = ifelse(str_detect(file, "ADS"), "ADS", "IDS"))
+```
+
+Distribution across conditions. 
+
+```{r}
+d %>% 
+  group_by(condition, workerid) %>%
+  distinct %>%
+  group_by(condition) %>%
+  summarise(n =n()) %>%
+  kable
+```
+
+# Main analysis
+
+Major summary histogram.
+
+```{r}
+d %>%
+  group_by(file, condition, register) %>%
+  summarise(rating = mean(rating)) %>%
+ggplot(aes(x = rating)) + 
+  geom_histogram(binwidth=1) + 
+  facet_grid(register~condition) + 
+  theme_bw()
+```
+
+Give means and variability.
+
+```{r}
+d %>%
+  group_by(file, condition, register) %>%
+  summarise(rating = mean(rating)) %>%
+  group_by(condition, register) %>%
+  summarise(mean = mean(rating),
+            sd = sd(rating)) %>%
+  knitr::kable(digits = 2)
+```
+
+
